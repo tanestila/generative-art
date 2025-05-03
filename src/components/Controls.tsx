@@ -1,15 +1,13 @@
 import React, { FC } from "react";
+import { useArtStore } from "../hooks/useArtStore";
 
-interface IProps {
-  onGenerate: () => void;
-  onSave: () => void;
-}
+const Controls: FC = () => {
+  const generateNewArt = useArtStore((state) => state.generateNewArt);
 
-const Controls: FC<IProps> = ({ onGenerate, onSave }) => {
   return (
     <div>
-      <button onClick={onGenerate}>Generate New</button>
-      <button onClick={onSave}>Save</button>
+      <button onClick={generateNewArt}>Generate New</button>
+      <button onClick={() => {}}>Save</button>
     </div>
   );
 };

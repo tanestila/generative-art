@@ -1,21 +1,9 @@
-type ArtElementType = "circle" | "square" | "triangle" | "line" | "text";
-
-export interface ArtElement {
-  type: ArtElementType;
-  color: string;
-  size: { width: number; height: number };
-  position: { x: number; y: number; x2: number; y2: number };
-  rotation?: number;
-}
-
-export interface ArtConfig {
-  elements: ArtElement[];
-  backgroundColor: string;
-}
+import { useCallback, useState } from "react";
+import { IArtConfig, IArtElement, ArtElementType } from "../types";
 
 export const drawElements = (
   ctx: CanvasRenderingContext2D,
-  config: ArtConfig,
+  config: IArtConfig,
   canvasWidth: number,
   canvasHeight: number
 ) => {
@@ -61,4 +49,52 @@ export const drawElements = (
         console.error("Unknown element type:", element.type);
     }
   });
+};
+
+const getRandomElementType = (): ArtElementType => {
+  const types: ArtElementType[] = ["circle", "square", "triangle"];
+  return types[Math.floor(Math.random() * types.length)];
+};
+
+const getRandomColor = (): string => {
+  const hue = Math.floor(Math.random() * 360);
+  const saturation = Math.floor(Math.random() * 100) + 20;
+  const lightness = Math.floor(Math.random() * 50) + 40;
+  return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+};
+
+export const generateElements = (count: number = 50) => {
+  const elements: IArtElement[] = [];
+  const elementCount = Math.floor(Math.random() * count) + 20;
+
+  for (let i = 0; i < elementCount; i++) {
+    const type = getRandomElementType();
+    const size = {
+      width: Math.random() * 100 + 20,
+      height: Math.random() * 100 + 20,
+    };
+    const position = {
+      x: Math.random() * window.innerWidth,
+      y: Math.random() * window.innerHeight,
+      x2: Math.random() * window.innerWidth,
+      y2: Math.random() * window.innerHeight,
+    };
+    const color = getRandomColor();
+    elements.push({ type, size, position, color });
+  }
+  return elements;
+  // setConfig((prev) => ({ ...prev, elements }));
+};
+
+export const useGenerativeArt = () => {
+  const [config, setConfig] = useState<IArtConfig>({
+    elements: [],
+    backgroundColor: "white",
+  });
+
+  const generateNewArt = useCallback(() => {
+    setConfig((prev) => ({ ...prev, elements: generateElements() }));
+  }, [generateElements]);
+
+  return { config, generateNewArt };
 };
